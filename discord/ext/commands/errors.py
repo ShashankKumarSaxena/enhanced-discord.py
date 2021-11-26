@@ -23,6 +23,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from discord.errors import ClientException, DiscordException
+from typing import Optional
 
 
 __all__ = (
@@ -85,12 +86,19 @@ class CommandError(DiscordException):
     from :class:`.Bot`\, :func:`on_command_error`.
     """
     def __init__(self, message=None, *args):
+        self.msg = message
         if message is not None:
             # clean-up @everyone and @here mentions
             m = message.replace('@everyone', '@\u200beveryone').replace('@here', '@\u200bhere')
             super().__init__(m, *args)
         else:
             super().__init__(*args)
+            
+    def __str__(self) -> Optional[str]:
+        if self.msg is not None:
+            return self.msg
+        
+        return None
 
 class ConversionError(CommandError):
     """Exception raised when a Converter class raises non-CommandError.
